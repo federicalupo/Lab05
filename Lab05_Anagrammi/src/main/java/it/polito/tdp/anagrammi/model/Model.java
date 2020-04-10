@@ -12,10 +12,14 @@ public class Model {
 	private Set<String> anagrammiC; 
 	private Set<String> anagrammiE;
 	private AnagrammaDAO dao;
+	private List<String> provvisorio;
 	
 
 	public void anagrammi(String parola) {
 		dao= new AnagrammaDAO();  //CREO
+		
+		provvisorio= new LinkedList<>();
+		provvisorio.add(""); //un elemento
 		
 		List<Character> disponibili = new LinkedList<>();
 
@@ -27,24 +31,24 @@ public class Model {
 			disponibili.add(parola.charAt(i));
 		}
 
-		this.ricorsiva("", 0, disponibili);
+		this.ricorsiva(provvisorio, 0, disponibili);
 		
 
 	}
 	
 
-	private void ricorsiva(String parziale, Integer livello, List<Character> disponibili) {
+	private void ricorsiva(List<String> parziale, Integer livello, List<Character> disponibili) {
 
 		if (disponibili.size() == 0) {
 			
 
-			if (dao.isCorrect(parziale)) { // se non la creo dao.isCorrect -> eccezione perchè dao = null
+			if (dao.isCorrect(parziale.get(parziale.size()-1))) { // se non la creo dao.isCorrect -> eccezione perchè dao = null
 
-				this.anagrammiC.add(parziale);
+				this.anagrammiC.add(parziale.get(parziale.size()-1));
 				return;
 
 			} else {
-				this.anagrammiE.add(parziale);
+				this.anagrammiE.add(parziale.get(parziale.size()-1));
 				return;
 
 			}
@@ -52,12 +56,15 @@ public class Model {
 		}
 
 		for (Character c : disponibili) {
-			String temp = parziale + c;
+			parziale.add(parziale.get(parziale.size()-1)+c);
+			
 
 			List<Character> disponibiliTemp = new LinkedList<>(disponibili);
 			disponibiliTemp.remove(c);
 
-			ricorsiva(temp, livello + 1, disponibiliTemp);
+			ricorsiva(parziale, livello + 1, disponibiliTemp);
+			
+			parziale.remove(parziale.size()-1);
 
 		}
 
